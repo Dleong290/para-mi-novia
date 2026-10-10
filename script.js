@@ -2,27 +2,28 @@
 
 const starsContainer = document.getElementById('stars');
 
-for(let i = 0; i < 150; i++){
+if (starsContainer) {
+  for(let i = 0; i < 150; i++){
 
-  let star = document.createElement('div');
+    let star = document.createElement('div');
 
-  star.classList.add('star');
+    star.classList.add('star');
 
-  const size = (Math.random() * 2.5 + 1).toFixed(1);
+    const size = (Math.random() * 2.5 + 1).toFixed(1);
 
-  star.style.width = size + 'px';
-  star.style.height = size + 'px';
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
 
-  star.style.top = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
 
-  star.style.left = Math.random() * 100 + '%';
+    star.style.left = Math.random() * 100 + '%';
 
-  star.style.animationDuration =
-  (Math.random() * 3 + 2) + 's';
+    star.style.animationDuration =
+    (Math.random() * 3 + 2) + 's';
 
-  starsContainer.appendChild(star);
+    starsContainer.appendChild(star);
 
-}
+  }
 
 /* ESTRELLAS FUGACES */
 
@@ -53,6 +54,7 @@ function createShootingStar(){
 }
 
 setTimeout(createShootingStar, 2000);
+}
 
 /* CONTADOR */
 
@@ -60,6 +62,8 @@ const startDate = new Date(2026, 3, 4, 9, 10, 0);
 // Año, Mes (0=enero, 3=abril), Día, Hora, Minutos, Segundos
 
 function updateCounter() {
+
+    if (!document.getElementById("days")) return;
 
     const now = new Date();
     const diff = now - startDate;
@@ -89,23 +93,48 @@ function toggleText(element){
 const music =
 document.getElementById('music');
 
-music.volume = 0.05;
+if (music) music.volume = 0.05;
+
+const musicControl = document.getElementById('moonBtn') || document.getElementById('musicGift');
+
+function updateMusicControl(isPlaying) {
+  if (!musicControl) return;
+  musicControl.classList.toggle('playing', isPlaying);
+  musicControl.setAttribute('aria-pressed', String(isPlaying));
+  musicControl.setAttribute('aria-label', isPlaying ? 'Pausar canción' : 'Reproducir canción');
+
+  const label = musicControl.querySelector('.gift-control-label');
+  if (label) label.textContent = isPlaying ? 'Pausar canción' : 'Reproducir canción';
+}
+
+if (music) {
+  music.addEventListener('playing', () => updateMusicControl(true));
+  music.addEventListener('pause', () => updateMusicControl(false));
+}
 
 function toggleMusic() {
-  const moonBtn = document.getElementById('moonBtn');
+  if (!music || !musicControl) return;
   if (music.paused) {
-    music.play();
-    moonBtn.classList.add('playing');
+    music.play().catch(error => {
+      if (error.name !== 'AbortError') {
+        console.error('No se pudo reproducir la canción:', error);
+      }
+    });
   } else {
     music.pause();
-    moonBtn.classList.remove('playing');
   }
 }
+
+if (musicControl) {
+  musicControl.addEventListener('click', toggleMusic);
+}
+
 /* AUTOPLAY */
 
 window.addEventListener('click', () => {
+  const moonBtn = document.getElementById('moonBtn');
+  if (!music || !moonBtn) return;
   music.play().catch(() => {});
-  document.getElementById('moonBtn').classList.add('playing');
 }, { once:true });
 
 /* MEMORIES FLIP */
@@ -157,6 +186,8 @@ const letterReveal = document.getElementById('letterReveal');
 
 function updateLockCounter(){
 
+  if (!document.getElementById('ldays')) return;
+
   const now = new Date();
   const diff = targetDate - now;
 
@@ -190,7 +221,7 @@ updateLockCounter();
 const notYetPopup = document.getElementById('notYetPopup');
 const closeLetterBtn = document.getElementById('closeLetterBtn');
 
-closeLetterBtn.addEventListener('click', () => {
+if (closeLetterBtn) closeLetterBtn.addEventListener('click', () => {
 
   letterReveal.classList.remove('visible');
 
@@ -202,7 +233,7 @@ closeLetterBtn.addEventListener('click', () => {
 
 });
 
-openBtn.addEventListener('click', () => {
+if (openBtn) openBtn.addEventListener('click', () => {
 
   const now = new Date();
 
@@ -234,6 +265,7 @@ lockView.classList.add('hide');
 window.addEventListener('load', () => {
 
   const tooltip = document.getElementById('moonTooltip');
+  if (!tooltip) return;
 
   setTimeout(() => {
     tooltip.classList.add('show');
